@@ -1,6 +1,9 @@
 import pytest
 from decimal import Decimal
-from domain.value_objects.indicators import HealthIndicators, NetworkParameters
+from domain.value_objects.indicators import (
+    HealthIndicators, NetworkParameters,
+    CraftdccvParameters, PeaieParameters, SscneParameters,
+)
 
 
 class TestHealthIndicators:
@@ -40,49 +43,163 @@ class TestHealthIndicators:
         assert not h.is_soil_healthy
 
 
+class TestCraftdccvParameters:
+    def test_healthy(self):
+        p = CraftdccvParameters(
+            connectivity=Decimal("0.3"),
+            redundancy=Decimal("0.4"),
+            awareness=Decimal("0.8"),
+            flexibility=Decimal("0.7"),
+            transparency=Decimal("0.9"),
+            diversity=Decimal("0.8"),
+            complexity=Decimal("0.4"),
+            centrality=Decimal("0.2"),
+            variety=Decimal("0.7"),
+        )
+        assert p.is_healthy
+        assert p.resilience_score >= Decimal("0.6")
+
+    def test_unhealthy(self):
+        p = CraftdccvParameters(
+            connectivity=Decimal("0.1"),
+            redundancy=Decimal("0.1"),
+            awareness=Decimal("0.2"),
+            flexibility=Decimal("0.2"),
+            transparency=Decimal("0.2"),
+            diversity=Decimal("0.1"),
+            complexity=Decimal("0.9"),
+            centrality=Decimal("0.9"),
+            variety=Decimal("0.1"),
+        )
+        assert not p.is_healthy
+
+    def test_immutability(self):
+        p = CraftdccvParameters(
+            connectivity=Decimal("0.3"), redundancy=Decimal("0.4"),
+            awareness=Decimal("0.8"), flexibility=Decimal("0.7"),
+            transparency=Decimal("0.9"), diversity=Decimal("0.8"),
+            complexity=Decimal("0.4"), centrality=Decimal("0.2"),
+            variety=Decimal("0.7"),
+        )
+        with pytest.raises(AttributeError):
+            p.connectivity = Decimal("0.5")
+
+
+class TestPeaieParameters:
+    def test_healthy(self):
+        p = PeaieParameters(
+            productivity=Decimal("0.8"),
+            efficiency=Decimal("0.85"),
+            autonomy=Decimal("0.7"),
+            integrity=Decimal("0.9"),
+            emergence=Decimal("0.6"),
+        )
+        assert p.is_healthy
+
+    def test_unhealthy(self):
+        p = PeaieParameters(
+            productivity=Decimal("0.3"),
+            efficiency=Decimal("0.3"),
+            autonomy=Decimal("0.2"),
+            integrity=Decimal("0.4"),
+            emergence=Decimal("0.1"),
+        )
+        assert not p.is_healthy
+
+
+class TestSscneParameters:
+    def test_healthy(self):
+        p = SscneParameters(
+            synergy=Decimal("0.8"),
+            self_organization=Decimal("0.7"),
+            synchronicity=Decimal("0.6"),
+            nestedness=Decimal("0.85"),
+            evolution=Decimal("0.7"),
+        )
+        assert p.is_healthy
+
+    def test_unhealthy(self):
+        p = SscneParameters(
+            synergy=Decimal("0.3"),
+            self_organization=Decimal("0.2"),
+            synchronicity=Decimal("0.1"),
+            nestedness=Decimal("0.3"),
+            evolution=Decimal("0.2"),
+        )
+        assert not p.is_healthy
+
+
 class TestNetworkParameters:
     def test_healthy_network(self):
         np = NetworkParameters(
-            connectance=Decimal("0.2"),
-            modularity=Decimal("0.5"),
+            craftdccv=CraftdccvParameters(
+                connectivity=Decimal("0.2"), redundancy=Decimal("0.5"),
+                awareness=Decimal("0.8"), flexibility=Decimal("0.7"),
+                transparency=Decimal("0.9"), diversity=Decimal("0.8"),
+                complexity=Decimal("0.4"), centrality=Decimal("0.3"),
+                variety=Decimal("0.7"),
+            ),
+            peaie=PeaieParameters(
+                productivity=Decimal("0.8"), efficiency=Decimal("0.85"),
+                autonomy=Decimal("0.7"), integrity=Decimal("0.9"),
+                emergence=Decimal("0.6"),
+            ),
+            sscne=SscneParameters(
+                synergy=Decimal("0.8"), self_organization=Decimal("0.7"),
+                synchronicity=Decimal("0.6"), nestedness=Decimal("0.85"),
+                evolution=Decimal("0.7"),
+            ),
             reinforcing_loops=3,
             balancing_loops=3,
-            resilience_index=Decimal("0.7"),
-            circularity=Decimal("0.85"),
-            diversity_shannon_index=Decimal("2.5"),
-            average_path_length=Decimal("4"),
-            synergy_density=Decimal("0.6"),
-            leverage_potential=Decimal("0.5"),
         )
         assert np.is_healthy
         assert np.feedback_loop_ratio == Decimal("1.0")
+        assert np.aggregate_score >= Decimal("0.6")
 
     def test_unhealthy_network(self):
         np = NetworkParameters(
-            connectance=Decimal("0.5"),
-            modularity=Decimal("0.1"),
+            craftdccv=CraftdccvParameters(
+                connectivity=Decimal("0.1"), redundancy=Decimal("0.1"),
+                awareness=Decimal("0.2"), flexibility=Decimal("0.2"),
+                transparency=Decimal("0.2"), diversity=Decimal("0.1"),
+                complexity=Decimal("0.9"), centrality=Decimal("0.9"),
+                variety=Decimal("0.1"),
+            ),
+            peaie=PeaieParameters(
+                productivity=Decimal("0.3"), efficiency=Decimal("0.3"),
+                autonomy=Decimal("0.2"), integrity=Decimal("0.4"),
+                emergence=Decimal("0.1"),
+            ),
+            sscne=SscneParameters(
+                synergy=Decimal("0.2"), self_organization=Decimal("0.2"),
+                synchronicity=Decimal("0.1"), nestedness=Decimal("0.3"),
+                evolution=Decimal("0.2"),
+            ),
             reinforcing_loops=5,
             balancing_loops=1,
-            resilience_index=Decimal("0.3"),
-            circularity=Decimal("0.4"),
-            diversity_shannon_index=Decimal("1.0"),
-            average_path_length=Decimal("8"),
-            synergy_density=Decimal("0.2"),
-            leverage_potential=Decimal("0.1"),
         )
         assert not np.is_healthy
 
     def test_feedback_loop_ratio_no_balancing(self):
         np = NetworkParameters(
-            connectance=Decimal("0.2"),
-            modularity=Decimal("0.5"),
+            craftdccv=CraftdccvParameters(
+                connectivity=Decimal("0.2"), redundancy=Decimal("0.5"),
+                awareness=Decimal("0.8"), flexibility=Decimal("0.7"),
+                transparency=Decimal("0.9"), diversity=Decimal("0.8"),
+                complexity=Decimal("0.4"), centrality=Decimal("0.3"),
+                variety=Decimal("0.7"),
+            ),
+            peaie=PeaieParameters(
+                productivity=Decimal("0.8"), efficiency=Decimal("0.85"),
+                autonomy=Decimal("0.7"), integrity=Decimal("0.9"),
+                emergence=Decimal("0.6"),
+            ),
+            sscne=SscneParameters(
+                synergy=Decimal("0.8"), self_organization=Decimal("0.7"),
+                synchronicity=Decimal("0.6"), nestedness=Decimal("0.85"),
+                evolution=Decimal("0.7"),
+            ),
             reinforcing_loops=5,
             balancing_loops=0,
-            resilience_index=Decimal("0.7"),
-            circularity=Decimal("0.9"),
-            diversity_shannon_index=Decimal("2.0"),
-            average_path_length=Decimal("3"),
-            synergy_density=Decimal("0.5"),
-            leverage_potential=Decimal("0.5"),
         )
         assert np.feedback_loop_ratio == Decimal("Infinity")

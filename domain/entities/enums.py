@@ -27,12 +27,48 @@ class RowType(Enum):
     C = "C"
 
 
-class Dimension(Enum):
-    ECOLOGICAL = "ECOLOGICAL"
-    SOCIAL = "SOCIAL"
-    ECONOMIC = "ECONOMIC"
-    CULTURAL = "CULTURAL"
-    STRUCTURAL = "STRUCTURAL"
+class SnoLevel(Enum):
+    SYSTEM = "SYSTEM"
+    NETWORK = "NETWORK"
+    OBJECT = "OBJECT"
+
+
+class ELSICategory(Enum):
+    ENERGY = "ENERGY"
+    MATERIALS = "MATERIALS"
+    ECOSYSTEMS = "ECOSYSTEMS"
+    SPECIES = "SPECIES"
+    CULTURE = "CULTURE"
+    ECONOMY = "ECONOMY"
+    HEALTH = "HEALTH"
+    HAPPINESS = "HAPPINESS"
+
+
+class MapDimension(Enum):
+    TIME = "TIME"
+    SPACE = "SPACE"
+    CONTEXT = "CONTEXT"
+
+
+class MapScale(Enum):
+    SMALL = "SMALL"
+    MEDIUM = "MEDIUM"
+    LARGE = "LARGE"
+
+
+class TransitionType(Enum):
+    START = "START"
+    STOP = "STOP"
+    CHANGE = "CHANGE"
+    ENABLE = "ENABLE"
+    GOVERN = "GOVERN"
+
+
+class ActionType(Enum):
+    PUSH = "PUSH"
+    PULL = "PULL"
+    LUBRICATE = "LUBRICATE"
+    SYSTEMIC = "SYSTEMIC"
 
 
 class NodeType(Enum):
